@@ -1,0 +1,1 @@
+- Lists in markdown should use a single space after the hyphen.

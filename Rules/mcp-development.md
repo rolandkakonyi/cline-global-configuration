@@ -1,0 +1,1 @@
+You can restart MCP servers by toucing the file `/Users/rolandk/Library/Application Support/Code - Insiders/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json` without any actual changes.
