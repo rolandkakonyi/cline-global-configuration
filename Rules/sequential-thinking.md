@@ -116,4 +116,3 @@ This illustrates how Cline might use the tool iteratively.
 *   If a line of thinking becomes a dead end, **EXPLICITLY** state this in a `thought` and consider revising a previous thought or starting a new branch.
 
 This guide should help Cline leverage the `sequentialthinking` MCP tool to its full potential.
-
