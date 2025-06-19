@@ -4,10 +4,24 @@ This repository contains the configuration files for Cline, an AI software engin
 
 ## Structure
 
-The repository is organized into two main directories:
+The repository is organized into three main directories:
 
 - `Rules/`: Contains Markdown files that define the core principles and constraints that Cline must follow.
 - `Workflows/`: Contains Markdown files that outline specific, detailed processes for common tasks.
+- `memory-bank/`: Stores files that help Cline maintain context and knowledge across sessions.
+
+## Memory Bank
+
+The `memory-bank/` directory is crucial for Cline's operation, as Cline's memory resets between sessions. It contains the following core files, which are based on the `Rules/memory-bank.md` and `Rules/cline-continuous-improvement-protocol.md` guidelines:
+
+- `projectbrief.md`: Defines the project's core requirements, goals, and scope.
+- `productContext.md`: Explains why the project exists, the problems it solves, and user experience goals.
+- `activeContext.md`: Tracks the current work focus, recent changes, next steps, and active decisions.
+- `systemPatterns.md`: Describes the system architecture, key technical decisions, and design patterns.
+- `techContext.md`: Details the technologies used, development setup, and technical constraints.
+- `progress.md`: Logs completed work, work in progress, known issues, and the evolution of project decisions.
+- `consolidated_learnings.md`: Stores curated, actionable insights derived from `raw_reflection_log.md`.
+- `raw_reflection_log.md`: Contains detailed, timestamped raw entries from task reviews and analyses.
 
 ## Rules
 

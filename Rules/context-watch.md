@@ -1,3 +1,11 @@
+---
+description: Defines Cline's mandatory protocol for task handoff strategies, context window monitoring, and workflow management to ensure continuity and efficient task completion.
+author: https://github.com/nickbaumann98
+version: 1.0
+tags: ["workflow", "task-management", "context-management", "guidelines", "handoff", "core-behavior"]
+globs: ["*"] # This protocol applies to all Cline operations
+---
+
 # You MUST use the `new_task` tool: Task Handoff Strategy Guide
 
 **⚠️ CRITICAL INSTRUCTIONS - YOU MUST FOLLOW THESE GUIDELINES ⚠️**
