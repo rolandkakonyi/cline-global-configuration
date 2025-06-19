@@ -118,9 +118,18 @@ If ANY answer is "no", I MUST NOT use attempt_completion.
 </thinking>
 
 1. Test Each Tool (REQUIRED)
-   □ Test each tool with valid inputs
-   □ Verify output format is correct
-   ⚠️ DO NOT PROCEED UNTIL ALL TOOLS TESTED
+   - **Unit Tests:**
+     □ Write unit tests for individual functions, classes, and components within the MCP server to ensure they behave as expected in isolation.
+   - **Integration Tests:**
+     □ Test each tool with valid inputs.
+     □ Verify output format is correct.
+     □ **End-to-End MCP Workflow:**
+       - Run the MCP server.
+       - Implement or use an existing MCP Client.
+       - Programmatically use the MCP Client to connect to your running server.
+       - Call each of the server's tools via the client's programmatic API.
+       - Assert that the responses and effects of the tools are correct.
+   ⚠️ DO NOT PROCEED UNTIL ALL TOOLS ARE THOROUGHLY TESTED WITH BOTH UNIT AND INTEGRATION TESTS.
 
 ## Step 4: Completion
 ❗ STOP AND VERIFY:
@@ -132,7 +141,7 @@ Only after ALL tools have been tested can attempt_completion be used.
 ## Key Requirements
 - ✓ Must use MCP SDK
 - ✓ Must have comprehensive logging
-- ✓ Must test each tool individually
+- ✓ Must test each tool individually with unit and integration tests
 - ✓ Must handle errors gracefully
 - ⛔️ NEVER skip testing before completion
 
@@ -147,5 +156,7 @@ For the most up-to-date and detailed information on developing MCP servers with 
     - GitHub Repository: [https://github.com/jlowin/fastmcp](https://github.com/jlowin/fastmcp)
     - Official Documentation: [https://gofastmcp.com](https://gofastmcp.com)
     - README (for quickstart and overview): `https://raw.githubusercontent.com/jlowin/fastmcp/main/README.md`
+- **MCP Specification**:
+    - The official Model Context Protocol specification can be found at: [https://modelcontextprotocol.io/specification/2025-06-18.md](https://modelcontextprotocol.io/specification/2025-06-18.md)
 
 You can use Cline's `fetch` tool or GitHub tools to access the raw README content from the URLs above if needed.

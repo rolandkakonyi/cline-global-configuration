@@ -1,23 +1,19 @@
 ---
 Date: 2025-06-20
-TaskRef: "Update Rules/mcp-server-development-protocol.md for FastMCP"
+TaskRef: "Add MCP Specification link to MCP development guides"
 
 Learnings:
-- Updated MCP server development protocol to use FastMCP for both TypeScript and Python.
-- TypeScript FastMCP: uses `npm install fastmcp`, repository at `punkpeye/fastmcp`.
-- Python FastMCP: uses `uv pip install fastmcp`, repository at `jlowin/fastmcp`, documentation at `gofastmcp.com`.
-- FastMCP provides context-based logging (e.g., `ctx.info()`, `log.info()`) and often handles schema generation.
-- Configuration in `cline_mcp_settings.json` for FastMCP servers involves directly calling the server script (e.g., `tsx server.ts` or `python server.py`).
-- Added a "Further Documentation" section to the rule, pointing to official FastMCP resources.
+- Successfully updated `Rules/mcp-server-development-protocol.md` by adding a link to the MCP Specification in the "Further Documentation" section.
+- Successfully updated `Rules/mcp-client-development-guide.md` by adding a link to the MCP Specification in the "Next steps" section.
+- Used `replace_in_file` tool for precise modifications in both Markdown files.
 
 Difficulties:
-- Fetching large README files from GitHub using the `fetch` tool required multiple calls with `start_index` due to content truncation. This is a recurring pattern for large remote content.
+- None encountered.
 
 Successes:
-- Successfully integrated new information about FastMCP into the existing `mcp-server-development-protocol.md` rule.
-- Maintained the structure of the rule while updating relevant sections for accuracy.
+- Both guides now correctly reference the official MCP specification document.
+- Changes were applied accurately as planned.
 
 Improvements_Identified_For_Consolidation:
-- General pattern: Strategy for fetching large files in chunks using the `fetch` tool with `start_index` parameter.
-- Project-Specific (Cline Rules): Key details for FastMCP (TS & Python) bootstrapping, logging, configuration, and documentation links.
+- General pattern: When creating or updating technical documentation that refers to a standard or protocol, always ensure a direct link to the latest official specification document is included. This provides users with a canonical source for detailed information.
 ---

@@ -407,6 +407,50 @@ If you see:
 *   `Tool execution failed`: Verify the tool's required environment variables are set
 *   `Timeout error`: Consider increasing the timeout in your client configuration
 
+### Testing with a Simple Echo Server
+
+Testing your MCP client's core functionality (like connection, tool listing, and tool invocation) can be greatly simplified by using a local "echo" server. This server would typically have a single tool, for example, `echo_tool`, that simply returns any input it receives.
+
+**Benefits:**
+*   **Isolated Testing:** Test your client's logic without dependencies on external services or complex server setups.
+*   **Quick Verification:** Easily confirm that your client can connect, list tools, send requests, and process responses.
+*   **Debugging:** Simplify debugging of request/response handling and data serialization.
+
+**Example Echo Server (Python with FastMCP):**
+A simple echo server can be created using a framework like FastMCP.
+```python
+# echo_server.py
+from fastmcp import FastMCP, ToolContext
+
+mcp = FastMCP()
+
+@mcp.tool(
+    name="echo_tool",
+    description="Echoes back the input message.",
+    input_schema={
+        "type": "object",
+        "properties": {"message": {"type": "string", "description": "The message to echo."}},
+        "required": ["message"],
+    }
+)
+async def echo_tool(ctx: ToolContext, message: str):
+    # await ctx.info(f"Echoing message: {message}") # Optional logging
+    return {"echoed_message": message}
+
+if __name__ == "__main__":
+    mcp.run()
+```
+Save this as `echo_server.py` in your project.
+
+**Connecting Your Client:**
+Modify your client's connection command to point to this local server script:
+```bash
+uv run client.py path/to/your/echo_server.py
+```
+
+**Testing Client Logic:**
+Once connected, your client will list `echo_tool`. You can then send a query that your LLM (e.g., Claude) would interpret to use this tool. For example, a query like "Use echo_tool to echo 'hello world'" should trigger the tool. You can then verify that your client correctly handles the tool call and receives the echoed response (e.g., `{'echoed_message': 'hello world'}`). This helps confirm the client's request-response cycle with the MCP server.
+
 ---
 
 ## Node.js (TypeScript) Client Development
@@ -807,6 +851,52 @@ If you see:
 *   `ANTHROPIC_API_KEY is not set`: Check your .env file and environment variables
 *   `TypeError`: Ensure you're using the correct types for tool arguments
 
+### Testing with a Simple Echo Server
+
+Testing your MCP client's core functionality can be streamlined using a local "echo" server. This server would feature a basic tool, like `echo_tool`, which returns its input.
+
+**Benefits:**
+*   **Isolated Testing:** Validate client logic independently of complex external services.
+*   **Quick Verification:** Confirm connection, tool listing, request sending, and response processing.
+*   **Debugging:** Simplify troubleshooting of request/response handling.
+
+**Example Echo Server (TypeScript with FastMCP):**
+You can create a simple echo server using a framework like FastMCP.
+```typescript
+// echoServer.ts
+import { FastMCP, ToolContext, z } from 'fastmcp'; // Ensure FastMCP is installed
+
+const mcp = new FastMCP();
+
+mcp.tool({
+  name: 'echo_tool',
+  description: 'Echoes back the input message.',
+  inputSchema: z.object({
+    message: z.string().describe('The message to echo.'),
+  }),
+  execute: async (args, ctx: ToolContext) => {
+    // await ctx.log.info(`Echoing message: ${args.message}`); // Optional logging
+    return { echoed_message: args.message };
+  },
+});
+
+if (require.main === module) {
+  mcp.run(); // Or your specific run command for FastMCP TS
+}
+```
+Save this as `echoServer.ts`, compile it (e.g., `tsc echoServer.ts`), and ensure its output (e.g., `build/echoServer.js`) is runnable.
+
+**Connecting Your Client:**
+Update your client's connection command to target this local server:
+```bash
+# First build your echo server if needed (e.g., tsc echoServer.ts)
+# Then run the client
+node build/index.js path/to/your/build/echoServer.js
+```
+
+**Testing Client Logic:**
+After connecting, your client should list `echo_tool`. A query like "Use echo_tool to send back 'test message'" (if using an LLM to drive tool use) should trigger the `echo_tool`. Verify your client correctly processes the tool call and receives the echoed response (e.g., `{'echoed_message': 'test message'}`). This confirms the client-server interaction loop.
+
 ---
 
 ## Java Client Development
@@ -970,6 +1060,47 @@ For WebFlux-based applications, you can use the WebFlux starter instead:
 </dependency>
 ```
 This provides similar functionality but uses a WebFlux-based SSE transport implementation, recommended for production deployments.
+
+### Testing with a Simple Echo Server
+
+For testing your Java MCP client, especially when using Spring AI, you can create a minimal local MCP server. This "echo" server would expose a simple tool (e.g., `echo_tool`) that returns its input.
+
+**Benefits:**
+*   **Focused Client Testing:** Test client connection, tool discovery, and invocation logic without external dependencies.
+*   **Rapid Iteration:** Quickly verify client-side handling of MCP interactions.
+*   **Simplified Debugging:** Isolate issues in the client's request/response cycle.
+
+**Example Echo Server (Conceptual for Spring AI):**
+If you're using Spring AI, you could create a simple Spring Boot application with an MCP server configuration that defines an `echo_tool`.
+```java
+// Conceptual EchoTool.java
+// package com.example.echoserver;
+// import org.springframework.ai.model.function.FunctionCallback;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import java.util.function.Function;
+//
+// @Configuration
+// public class EchoToolConfig {
+//     @Bean
+//     public FunctionCallback echoFunction() {
+//         return FunctionCallback.builder("echo_tool")
+//             .withDescription("Echoes back the input message.")
+//             .withInputType(EchoRequest.class) // Define EchoRequest record/class
+//             .withResponseProcessor(response -> ((EchoRequest) response).message())
+//             .withFunction(request -> "Echo: " + request.message()) // Simplified logic
+//             .build();
+//     }
+// }
+// record EchoRequest(String message) {}
+```
+You would then configure your `mcp-servers-config.json` to point to this local Spring Boot echo server. For a non-Spring AI Java client, you'd implement a basic MCP server using the chosen Java MCP SDK.
+
+**Connecting Your Client:**
+Adjust your client's server configuration (e.g., in `mcp-servers-config.json` or programmatically) to connect to your local echo server. If the echo server is a Spring Boot app, you'd run it and configure your client to connect to its MCP endpoint.
+
+**Testing Client Logic:**
+With the client connected to the echo server, it should discover the `echo_tool`. You can then craft a prompt for your LLM (if applicable) or directly make a tool call via your client's API to use `echo_tool`. Verify that the client receives the expected echoed response, confirming the basic MCP communication flow.
 
 ---
 
@@ -1393,6 +1524,52 @@ If you see:
 *   `Tool execution failed`: Verify the tool's required environment variables are set
 *   `ANTHROPIC_API_KEY is not set`: Check your environment variables
 
+### Testing with a Simple Echo Server
+
+To effectively test your Kotlin MCP client, consider implementing a basic local "echo" server. This server would offer a single tool, such as `echo_tool`, designed to simply return any input it receives.
+
+**Benefits:**
+*   **Targeted Client Validation:** Test your client's connection, tool discovery, and invocation mechanisms in isolation.
+*   **Efficient Iteration:** Quickly confirm client-side handling of MCP interactions without external complexities.
+*   **Streamlined Debugging:** Isolate and resolve issues within the client's request/response lifecycle more easily.
+
+**Example Echo Server (Conceptual Kotlin):**
+You can implement a minimal MCP server using the Kotlin MCP SDK.
+```kotlin
+// conceptual_echo_server.kt
+// package com.example.mcp.echo
+//
+// import io.modelcontextprotocol.server.* // Use actual imports from Kotlin MCP SDK
+// import kotlinx.coroutines.runBlocking
+//
+// // Define input/output structures if your SDK uses them
+// data class EchoInput(val message: String)
+// data class EchoOutput(val echoed_message: String)
+//
+// fun main() = runBlocking {
+//     val server = StdioServer { // Or your SDK's server builder
+//         tool<EchoInput, EchoOutput>(
+//             name = "echo_tool",
+//             description = "Echoes back the input message.",
+//             inputSchema = EchoInput::class, // Or schema definition
+//         ) { input ->
+//             EchoOutput(input.message)
+//         }
+//     }
+//     server.run() // Start the server
+// }
+```
+Compile this into a JAR (e.g., using `./gradlew shadowJar`).
+
+**Connecting Your Client:**
+Modify your client's connection command to point to this local echo server JAR:
+```bash
+java -jar build/libs/<your-client-jar-name>-all.jar path/to/your/echo_server-all.jar
+```
+
+**Testing Client Logic:**
+Once your client connects, it should list `echo_tool`. If your client uses an LLM, a query like "Use echo_tool to echo 'Kotlin test'" should activate the tool. Verify that your client correctly handles the tool call and receives the echoed response (e.g., `{"echoed_message": "Kotlin test"}`). This confirms the fundamental client-server communication.
+
 ---
 
 ## C# Client Development
@@ -1492,6 +1669,60 @@ static (string command, string[] arguments) GetCommandAndArguments(string[] args
 }
 ```
 This creates a MCP client that will connect to a server that is provided as a command line argument. It then lists the available tools from the connected server.
+
+### Testing with a Simple Echo Server
+
+For testing your C# MCP client, creating a minimal local "echo" server is highly beneficial. This server would expose a basic tool, for instance, `echo_tool`, which simply returns any input it receives.
+
+**Benefits:**
+*   **Focused Client Validation:** Test client connection, tool discovery, and invocation logic without relying on external services.
+*   **Rapid Iteration Cycles:** Quickly verify how your client handles MCP interactions.
+*   **Simplified Debugging:** Isolate issues in the client's request/response handling more effectively.
+
+**Example Echo Server (Conceptual C#):**
+You can implement a simple MCP server using the C# MCP SDK.
+```csharp
+// Conceptual EchoServerProject/Program.cs
+// using ModelContextProtocol.Server; // Use actual imports from C# MCP SDK
+// using System.Threading.Tasks;
+//
+// public class EchoTool : McpTool<EchoTool.Input, EchoTool.Output>
+// {
+//     public override string Name => "echo_tool";
+//     public override string Description => "Echoes back the input message.";
+//     public override object InputSchema => new { type = "object", properties = new { message = new { type = "string" } }, required = new[] { "message" } };
+//
+//     public class Input { public string Message { get; set; } }
+//     public class Output { public string EchoedMessage { get; set; } }
+//
+//     public override Task<Output> ExecuteAsync(Input input, McpToolContext context)
+//     {
+//         // await context.Logger.LogInformationAsync($"Echoing: {input.Message}"); // Optional logging
+//         return Task.FromResult(new Output { EchoedMessage = input.Message });
+//     }
+// }
+//
+// public class EchoServer
+// {
+//     public static async Task Main(string[] args)
+//     {
+//         var server = new McpServerBuilder() // Or your SDK's server builder
+//             .AddTool(new EchoTool())
+//             .BuildStdioServer();
+//         await server.RunAsync(); // Start the server
+//     }
+// }
+```
+Build this as a separate console project (e.g., `EchoServerProject.csproj`).
+
+**Connecting Your Client:**
+Modify your client's startup command to point to this local echo server project:
+```bash
+dotnet run -- path/to/your/EchoServerProject/EchoServerProject.csproj
+```
+
+**Testing Client Logic:**
+After your client connects, it should discover the `echo_tool`. If your client integrates with an LLM, a query like "Use echo_tool to echo 'C# test'" should trigger the tool. Verify that your client correctly processes the tool call and receives the echoed response (e.g., a JSON object like `{"echoedMessage": "C# test"}`). This confirms the basic client-server communication flow.
 
 #### Query processing logic
 
@@ -1593,5 +1824,6 @@ Here's an example of what it should look like it connected to a weather server q
 *   **Clients:** View the list of clients that support MCP integrations.
 *   **Building MCP with LLMs:** Learn how to use LLMs like Claude to speed up your MCP development.
 *   **Core architecture:** Understand how MCP connects clients, servers, and LLMs.
+*   **MCP Specification:** Read the official [Model Context Protocol specification](https://modelcontextprotocol.io/specification/2025-06-18.md).
 
 (Note: Links from original CardGroup would need to be actual URLs if this were live documentation.)
