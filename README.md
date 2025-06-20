@@ -42,3 +42,7 @@ The `Rules/` directory includes the following files:
 The `Workflows/` directory includes the following file:
 
 - `pr-review-cline.md`: A detailed workflow for reviewing pull requests within the Cline project, utilizing the `gh` CLI and providing a step-by-step process for analysis, user confirmation, and decision-making.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
